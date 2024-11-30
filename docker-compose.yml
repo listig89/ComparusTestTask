@@ -1,0 +1,74 @@
+services:
+#  db-postgres:
+#    build:
+#      context: ./docker/db/postgres
+#      dockerfile: Dockerfile
+#    volumes:
+#      - ./docker/db/postgres/var/pgdata:/var/lib/postgresql/data
+#    ports:
+#      - "5432:5432"
+#
+#  db-postgres-2:
+#    build:
+#      context: ./docker/db/postgres-2
+#      dockerfile: Dockerfile
+#    volumes:
+#      - ./docker/db/postgres-2/var/pgdata:/var/lib/postgresql/data
+#    ports:
+#      - "5437:5432"
+#
+#  db-mysql:
+#    environment:
+#      MYSQL_ROOT_PASSWORD: root
+#      MYSQL_DATABASE: docker
+#      MYSQL_PASSWORD: root
+#    build:
+#      context: ./docker/db/mysql
+#      dockerfile: Dockerfile
+#    volumes:
+#      - ./docker/db/mysql/var:/var/lib/mysql
+#    ports:
+#      - "3317:3306"
+#
+#  db-mysql-2:
+#    environment:
+#      MYSQL_ROOT_PASSWORD: root2
+#      MYSQL_DATABASE: docker2
+#      MYSQL_PASSWORD: root2
+#    build:
+#      context: ./docker/db/mysql-2
+#      dockerfile: Dockerfile
+#    volumes:
+#      - ./docker/db/mysql-2/var:/var/lib/mysql
+#    ports:
+#      - "3318:3306"
+
+  db-mariadb:
+    image: mariadb
+    environment:
+      MARIADB_ROOT_PASSWORD: rootmaria
+      MARIADB_DATABASE: dockermaria
+      MARIADB_PASSWORD: rootmaria
+    build:
+      context: ./docker/db/mariadb
+      dockerfile: Dockerfile
+    volumes:
+      - ./docker/db/mariadb/var:/var/lib/mysql
+      - ./docker/db/mariadb/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3327:3306"
+
+  db-mariadb-2:
+    image: mariadb
+    environment:
+      MARIADB_ROOT_PASSWORD: rootmaria2
+      MARIADB_DATABASE: dockermaria2
+      MARIADB_PASSWORD: rootmaria2
+    build:
+      context: ./docker/db/mariadb-2
+      dockerfile: Dockerfile
+    volumes:
+      - ./docker/db/mariadb-2/var:/var/lib/mysql
+      - ./docker/db/mariadb-2/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3328:3306"

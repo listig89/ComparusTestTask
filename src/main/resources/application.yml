@@ -1,0 +1,34 @@
+data-sources:
+  - name: data-base-1
+    strategy: postgres
+    url: jdbc:mysql://localhost/schema_name1
+    table: users
+    user: root
+    password: root
+    mapping:
+      id: user_id
+      username: login
+      name: first_name
+      surname: last_name
+  - name: data-base-2
+    strategy: postgres
+    url: jdbc:mysql://localhost/schema_name2
+    table: user_table
+    user: root
+    password: root
+    mapping:
+      id: ldap_login
+      username: ldap_login
+      name: name
+      surname: surname
+  - name: data-base-3
+    strategy: postgres
+    url: jdbc:mysql://localhost/schema_name3
+    table: user_table
+    user: root
+    password: root
+    mapping:
+      id: sso_login
+      username: sso_login
+      name: name
+      surname: surname
