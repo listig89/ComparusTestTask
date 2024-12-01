@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -35,14 +36,16 @@ public class UserDataAggregatedController {
     @GetMapping("/users")
     public List<User> getUsers(UsersRequestDto usersRequestDto) {
         logger.debug("Got user request: {}", usersRequestDto);
-        List<User> users = new ArrayList<>();
+        List<User> users = Collections.synchronizedList(new ArrayList<>());
 
         Map<String, DataSource> dataSources = applicationContext.getBeansOfType(DataSource.class);
-        dataSources.forEach((datasourceName, dataSource) -> {
-            NamedParameterJdbcTemplate namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        dataSources.entrySet().stream().parallel().forEach(entry -> {
+            var datasourceName = entry.getKey();
+            var dataSource = entry.getValue();
+            var namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
 
-            DataSourceDefinition dataSourceDefinition = dataSourceDefinitionsHolder.getDataSourceDefinition(datasourceName);
-            String sql = buildQuery(dataSourceDefinition, usersRequestDto);
+            var dataSourceDefinition = dataSourceDefinitionsHolder.getDataSourceDefinition(datasourceName);
+            var sql = buildQuery(dataSourceDefinition, usersRequestDto);
             try {
                 logger.trace("Executing query: {}", sql);
                 users.addAll(namedJdbcTemplate.query(sql,
@@ -58,7 +61,7 @@ public class UserDataAggregatedController {
     }
 
     private static String buildQuery(DataSourceDefinition dataSourceDefinition, UsersRequestDto request) {
-        DataSourceDefinition.Mapping mapping = dataSourceDefinition.getMapping();
+        var mapping = dataSourceDefinition.getMapping();
         return "select * from (select " +
                 mapping.getId() + " as id, " +
                 mapping.getUsername() + " as username, " +

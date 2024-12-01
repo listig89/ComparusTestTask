@@ -16,7 +16,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -43,22 +42,20 @@ public class DataSourceInitializer implements BeanFactoryAware {
     @PostConstruct
     public void onPostConstruct() {
         ConfigurableBeanFactory configurableBeanFactory = (ConfigurableBeanFactory) beanFactory;
-        ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
+        var objectMapper = new ObjectMapper(new YAMLFactory());
 
         try {
-            List<DataSourceDefinition> dataSourceDefinitions = objectMapper.readValue(getClass().getResourceAsStream("/datasources.yml"),
+            objectMapper.readValue(getClass().getResourceAsStream("/datasources.yml"),
                     new TypeReference<Map<String, List<DataSourceDefinition>>>() {
-                    }).get("data-sources");
-
-            dataSourceDefinitions.forEach(dataSourceDefinition -> {
+                    }).get("data-sources").forEach(dataSourceDefinition -> {
                 try {
-                    DataSource dataSource = DataSourceBuilder.create()
+                    var dataSource = DataSourceBuilder.create()
                             .driverClassName(resolveDriverClassNameByStrategy(dataSourceDefinition.getStrategy()))
                             .url(dataSourceDefinition.getUrl())
                             .username(dataSourceDefinition.getUser())
                             .password(dataSourceDefinition.getPassword())
                             .build();
-                    String dataSourceDefinitionName = dataSourceDefinition.getName();
+                    var dataSourceDefinitionName = dataSourceDefinition.getName();
                     configurableBeanFactory.registerSingleton(dataSourceDefinitionName, dataSource);
                     dataSourceDefinitionsHolder.addDataSourceDefinition(dataSourceDefinitionName, dataSourceDefinition);
                 } catch (Exception e) {
