@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import jakarta.annotation.PostConstruct;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.comparus.test.task.DataSourceDefinition;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
@@ -21,11 +24,13 @@ import java.util.Map;
 @Service
 public class DataSourceInitializer implements BeanFactoryAware {
 
+    private final Logger logger = LogManager.getLogger(DataSourceInitializer.class);
+
     private BeanFactory beanFactory;
     private final DataSourceDefinitionsHolder dataSourceDefinitionsHolder = new DataSourceDefinitionsHolder();
 
     @Override
-    public void setBeanFactory(BeanFactory beanFactory) {
+    public void setBeanFactory(@NonNull BeanFactory beanFactory) {
         this.beanFactory = beanFactory;
     }
 
@@ -41,20 +46,25 @@ public class DataSourceInitializer implements BeanFactoryAware {
         ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
 
         try {
-            List<DataSourceDefinition> dataSourceDefinitions = objectMapper.readValue(getClass().getResourceAsStream("/application.yml"),
+            List<DataSourceDefinition> dataSourceDefinitions = objectMapper.readValue(getClass().getResourceAsStream("/datasources.yml"),
                     new TypeReference<Map<String, List<DataSourceDefinition>>>() {
                     }).get("data-sources");
 
             dataSourceDefinitions.forEach(dataSourceDefinition -> {
-                DataSource dataSource = DataSourceBuilder.create()
-                        .driverClassName(resolveDriverClassNameByStrategy(dataSourceDefinition.getStrategy()))
-                        .url(dataSourceDefinition.getUrl())
-                        .username(dataSourceDefinition.getUser())
-                        .password(dataSourceDefinition.getPassword())
-                        .build();
-                String dataSourceDefinitionName = dataSourceDefinition.getName();
-                configurableBeanFactory.registerSingleton(dataSourceDefinitionName, dataSource);
-                dataSourceDefinitionsHolder.addDataSourceDefinition(dataSourceDefinitionName, dataSourceDefinition);
+                try {
+                    DataSource dataSource = DataSourceBuilder.create()
+                            .driverClassName(resolveDriverClassNameByStrategy(dataSourceDefinition.getStrategy()))
+                            .url(dataSourceDefinition.getUrl())
+                            .username(dataSourceDefinition.getUser())
+                            .password(dataSourceDefinition.getPassword())
+                            .build();
+                    String dataSourceDefinitionName = dataSourceDefinition.getName();
+                    configurableBeanFactory.registerSingleton(dataSourceDefinitionName, dataSource);
+                    dataSourceDefinitionsHolder.addDataSourceDefinition(dataSourceDefinitionName, dataSourceDefinition);
+                } catch (Exception e) {
+                    logger.error("Exception while building datasource {}", dataSourceDefinition);
+                    throw new RuntimeException(e);
+                }
             });
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -1,5 +1,8 @@
 package org.comparus.test.task.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.util.StringUtils;
 
 import java.util.stream.Stream;
@@ -7,6 +10,9 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.joining;
 import static org.springframework.util.StringUtils.hasLength;
 
+@Getter
+@Setter
+@ToString
 public class UsersRequestDto {
 
     private String id;
@@ -28,35 +34,4 @@ public class UsersRequestDto {
                 .collect(joining(" and "));
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
 }

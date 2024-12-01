@@ -1,5 +1,7 @@
 package org.comparus.test.task.controllers;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.comparus.test.task.DataSourceDefinition;
 import org.comparus.test.task.dto.UsersRequestDto;
 import org.comparus.test.task.entities.User;
@@ -19,6 +21,8 @@ import java.util.Map;
 @RestController
 public class UserDataAggregatedController {
 
+    private final Logger logger = LogManager.getLogger(UserDataAggregatedController.class);
+
     private final ApplicationContext applicationContext;
     private final DataSourceDefinitionsHolder dataSourceDefinitionsHolder;
 
@@ -30,6 +34,7 @@ public class UserDataAggregatedController {
 
     @GetMapping("/users")
     public List<User> getUsers(UsersRequestDto usersRequestDto) {
+        logger.debug("Got user request: {}", usersRequestDto);
         List<User> users = new ArrayList<>();
 
         Map<String, DataSource> dataSources = applicationContext.getBeansOfType(DataSource.class);
@@ -39,12 +44,12 @@ public class UserDataAggregatedController {
             DataSourceDefinition dataSourceDefinition = dataSourceDefinitionsHolder.getDataSourceDefinition(datasourceName);
             String sql = buildQuery(dataSourceDefinition, usersRequestDto);
             try {
+                logger.trace("Executing query: {}", sql);
                 users.addAll(namedJdbcTemplate.query(sql,
                         new BeanPropertySqlParameterSource(usersRequestDto),
                         new BeanPropertyRowMapper<>(User.class)));
-            }
-            catch (Exception e) {
-                System.out.println(datasourceName);
+            } catch (Exception e) {
+                logger.error("Exception occurred during {} datasource processing", datasourceName);
                 throw e;
             }
         });
