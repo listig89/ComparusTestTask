@@ -1,34 +1,73 @@
 data-sources:
   - name: data-base-1
     strategy: postgres
-    url: jdbc:mysql://localhost/schema_name1
-    table: users
-    user: root
-    password: root
+    url: jdbc:postgresql://localhost:5432/docker
+#    url: jdbc:postgresql://db-postgres:5432/docker
+    table: users_table
+    user: docker
+    password: docker
     mapping:
       id: user_id
-      username: login
-      name: first_name
-      surname: last_name
+      username: username
+      name: name
+      surname: surname
   - name: data-base-2
     strategy: postgres
-    url: jdbc:mysql://localhost/schema_name2
-    table: user_table
-    user: root
-    password: root
+    url: jdbc:postgresql://localhost:5437/docker2
+#    url: jdbc:postgresql://db-postgres-2:5432/docker2
+    table: users_table
+    user: docker2
+    password: docker2
     mapping:
-      id: ldap_login
-      username: ldap_login
+      id: userid
+      username: user_name
       name: name
-      surname: surname
+      surname: sur_name
   - name: data-base-3
-    strategy: postgres
-    url: jdbc:mysql://localhost/schema_name3
-    table: user_table
+    strategy: mysql
+    url: jdbc:mysql://localhost:3317/ldap_db
+#    url: jdbc:mysql://db-mysql:3306/ldap_db
+    table: ldap_users
     user: root
     password: root
     mapping:
-      id: sso_login
-      username: sso_login
-      name: name
-      surname: surname
+      id: ldap_user_id
+      username: ldap_user_name
+      name: ldap_name
+      surname: ldap_sur_name
+  - name: data-base-4
+    strategy: mysql
+    url: jdbc:mysql://localhost:3318/ldap_db2
+#    url: jdbc:mysql://db-mysql-2:3306/ldap_db2
+    table: ldap_users
+    user: root
+    password: root2
+    mapping:
+      id: ldap_userid
+      username: ldap_username
+      name: ldap_name
+      surname: ldap_surname
+  - name: data-base-5
+    strategy: mariadb
+    url: jdbc:mariadb://localhost:3327/dockermaria
+#    url: jdbc:mariadb://db-mariadb:3306/dockermaria
+    table: saml_users
+    user: root
+    password: rootmaria
+    mapping:
+      id: saml_user_id
+      username: saml_user_name
+      name: saml_name
+      surname: saml_sur_name
+  - name: data-base-6
+    strategy: mariadb
+    url: jdbc:mariadb://localhost:3328/dockermaria2
+#    url: jdbc:mariadb://db-mariadb-2:3306/dockermaria2
+    table: saml_users
+    user: root
+    password: rootmaria2
+    mapping:
+      id: saml_userid
+      username: saml_username
+      name: saml_name
+      surname: saml_surname

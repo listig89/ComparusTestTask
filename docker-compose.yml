@@ -1,50 +1,62 @@
+name: comparus-applications-cluster
 services:
-#  db-postgres:
-#    build:
-#      context: ./docker/db/postgres
-#      dockerfile: Dockerfile
-#    volumes:
-#      - ./docker/db/postgres/var/pgdata:/var/lib/postgresql/data
-#    ports:
-#      - "5432:5432"
-#
-#  db-postgres-2:
-#    build:
-#      context: ./docker/db/postgres-2
-#      dockerfile: Dockerfile
-#    volumes:
-#      - ./docker/db/postgres-2/var/pgdata:/var/lib/postgresql/data
-#    ports:
-#      - "5437:5432"
-#
-#  db-mysql:
-#    environment:
-#      MYSQL_ROOT_PASSWORD: root
-#      MYSQL_DATABASE: docker
-#      MYSQL_PASSWORD: root
-#    build:
-#      context: ./docker/db/mysql
-#      dockerfile: Dockerfile
-#    volumes:
-#      - ./docker/db/mysql/var:/var/lib/mysql
-#    ports:
-#      - "3317:3306"
-#
-#  db-mysql-2:
-#    environment:
-#      MYSQL_ROOT_PASSWORD: root2
-#      MYSQL_DATABASE: docker2
-#      MYSQL_PASSWORD: root2
-#    build:
-#      context: ./docker/db/mysql-2
-#      dockerfile: Dockerfile
-#    volumes:
-#      - ./docker/db/mysql-2/var:/var/lib/mysql
-#    ports:
-#      - "3318:3306"
+  application:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+
+  db-postgres:
+    container_name: db-postgres
+    build:
+      context: ./docker/db/postgres
+      dockerfile: Dockerfile
+    volumes:
+      - ./docker/db/postgres/var/pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  db-postgres-2:
+    container_name: db-postgres-2
+    build:
+      context: ./docker/db/postgres-2
+      dockerfile: Dockerfile
+    volumes:
+      - ./docker/db/postgres-2/var/pgdata:/var/lib/postgresql/data
+    ports:
+      - "5437:5432"
+
+  db-mysql:
+    container_name: db-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: docker
+      MYSQL_PASSWORD: root
+    build:
+      context: ./docker/db/mysql
+      dockerfile: Dockerfile
+    volumes:
+      - ./docker/db/mysql/var:/var/lib/mysql
+    ports:
+      - "3317:3306"
+
+  db-mysql-2:
+    container_name: db-mysql-2
+    environment:
+      MYSQL_ROOT_PASSWORD: root2
+      MYSQL_DATABASE: docker2
+      MYSQL_PASSWORD: root2
+    build:
+      context: ./docker/db/mysql-2
+      dockerfile: Dockerfile
+    volumes:
+      - ./docker/db/mysql-2/var:/var/lib/mysql
+    ports:
+      - "3318:3306"
 
   db-mariadb:
-    image: mariadb
+    container_name: db-mariadb
     environment:
       MARIADB_ROOT_PASSWORD: rootmaria
       MARIADB_DATABASE: dockermaria
@@ -59,7 +71,7 @@ services:
       - "3327:3306"
 
   db-mariadb-2:
-    image: mariadb
+    container_name: db-mariadb-2
     environment:
       MARIADB_ROOT_PASSWORD: rootmaria2
       MARIADB_DATABASE: dockermaria2

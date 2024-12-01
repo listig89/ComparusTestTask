@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'org.comparus.test.task'
-version = '0.0.1-SNAPSHOT'
+version = '1.0-SNAPSHOT'
 
 java {
     toolchain {
@@ -23,8 +23,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web:3.3.2'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.18.2'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa:3.3.2'
-    // https://mvnrepository.com/artifact/com.zaxxer/HikariCP
-    implementation 'com.zaxxer:HikariCP:2.3.2'
+    implementation 'org.apache.tomcat:tomcat-jdbc:11.0.1'
+
+    runtimeOnly 'mysql:mysql-connector-java:8.0.33'
+    runtimeOnly 'org.postgresql:postgresql:42.7.3'
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:3.5.1'
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
