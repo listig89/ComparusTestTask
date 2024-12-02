@@ -4,8 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import jakarta.annotation.PostConstruct;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.comparus.test.task.DataSourceDefinition;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -23,10 +22,9 @@ import java.util.Map;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 
+@Slf4j
 @Service
 public class DataSourceInitializer implements BeanFactoryAware {
-
-    private final Logger logger = LogManager.getLogger(DataSourceInitializer.class);
 
     private BeanFactory beanFactory;
     private final DataSourceDefinitionsHolder dataSourceDefinitionsHolder = new DataSourceDefinitionsHolder();
@@ -62,7 +60,7 @@ public class DataSourceInitializer implements BeanFactoryAware {
                         configurableBeanFactory.registerSingleton(dataSourceDefinitionName, dataSource);
                         dataSourceDefinitionsHolder.addDataSourceDefinition(dataSourceDefinitionName, dataSourceDefinition);
                     } catch (Exception e) {
-                        logger.error("Exception while building datasource {}", dataSourceDefinition);
+                        log.error("Exception while building datasource {}", dataSourceDefinition);
                         throw new RuntimeException(e);
                     }
                 });

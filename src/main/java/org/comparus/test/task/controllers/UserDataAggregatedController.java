@@ -1,5 +1,6 @@
 package org.comparus.test.task.controllers;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.comparus.test.task.DataSourceDefinition;
@@ -20,18 +21,13 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 public class UserDataAggregatedController {
 
     private final Logger logger = LogManager.getLogger(UserDataAggregatedController.class);
 
     private final ApplicationContext applicationContext;
     private final DataSourceDefinitionsHolder dataSourceDefinitionsHolder;
-
-    public UserDataAggregatedController(ApplicationContext applicationContext,
-                                        DataSourceDefinitionsHolder dataSourceDefinitionsHolder) {
-        this.applicationContext = applicationContext;
-        this.dataSourceDefinitionsHolder = dataSourceDefinitionsHolder;
-    }
 
     @GetMapping("/users")
     public List<User> getUsers(UsersRequestDto usersRequestDto) {
