@@ -36,6 +36,10 @@ dependencies {
 
     testCompileOnly 'org.projectlombok:lombok:1.18.36'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.36'
+
+    testImplementation "org.testcontainers:testcontainers-bom:1.19.8"
+    testImplementation "org.testcontainers:postgresql:1.19.8"
+    testImplementation "org.testcontainers:junit-jupiter:1.17.6"
 }
 
 tasks.named('test') {

@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+
 @Service
 public class DataSourceInitializer implements BeanFactoryAware {
 
@@ -40,32 +43,29 @@ public class DataSourceInitializer implements BeanFactoryAware {
     }
 
     @PostConstruct
-    public void onPostConstruct() {
+    public void onPostConstruct() throws IOException {
         ConfigurableBeanFactory configurableBeanFactory = (ConfigurableBeanFactory) beanFactory;
         var objectMapper = new ObjectMapper(new YAMLFactory());
 
-        try {
-            objectMapper.readValue(getClass().getResourceAsStream("/datasources.yml"),
-                    new TypeReference<Map<String, List<DataSourceDefinition>>>() {
-                    }).get("data-sources").forEach(dataSourceDefinition -> {
-                try {
-                    var dataSource = DataSourceBuilder.create()
-                            .driverClassName(resolveDriverClassNameByStrategy(dataSourceDefinition.getStrategy()))
-                            .url(dataSourceDefinition.getUrl())
-                            .username(dataSourceDefinition.getUser())
-                            .password(dataSourceDefinition.getPassword())
-                            .build();
-                    var dataSourceDefinitionName = dataSourceDefinition.getName();
-                    configurableBeanFactory.registerSingleton(dataSourceDefinitionName, dataSource);
-                    dataSourceDefinitionsHolder.addDataSourceDefinition(dataSourceDefinitionName, dataSourceDefinition);
-                } catch (Exception e) {
-                    logger.error("Exception while building datasource {}", dataSourceDefinition);
-                    throw new RuntimeException(e);
-                }
-            });
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        ofNullable(objectMapper.readValue(getClass().getResourceAsStream("/datasources.yml"),
+                new TypeReference<Map<String, List<DataSourceDefinition>>>() {
+                }).get("data-sources")).orElse(emptyList())
+                .forEach(dataSourceDefinition -> {
+                    try {
+                        var dataSource = DataSourceBuilder.create()
+                                .driverClassName(resolveDriverClassNameByStrategy(dataSourceDefinition.getStrategy()))
+                                .url(dataSourceDefinition.getUrl())
+                                .username(dataSourceDefinition.getUser())
+                                .password(dataSourceDefinition.getPassword())
+                                .build();
+                        var dataSourceDefinitionName = dataSourceDefinition.getName();
+                        configurableBeanFactory.registerSingleton(dataSourceDefinitionName, dataSource);
+                        dataSourceDefinitionsHolder.addDataSourceDefinition(dataSourceDefinitionName, dataSourceDefinition);
+                    } catch (Exception e) {
+                        logger.error("Exception while building datasource {}", dataSourceDefinition);
+                        throw new RuntimeException(e);
+                    }
+                });
     }
 
     private String resolveDriverClassNameByStrategy(String strategy) {
